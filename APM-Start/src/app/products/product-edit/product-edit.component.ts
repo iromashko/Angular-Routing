@@ -14,9 +14,26 @@ export class ProductEditComponent implements OnInit {
   pageTitle = 'Product Edit';
   errorMessage: string;
 
-  product: Product;
-
   private dataIsValid: { [key: string]: boolean };
+
+  get isDirty(): boolean {
+    return (
+      JSON.stringify(this.originalProduct) !==
+      JSON.stringify(this.currentProduct)
+    );
+  }
+
+  get product(): Product {
+    return this.currentProduct;
+  }
+
+  set product(value: Product) {
+    this.currentProduct = value;
+    this.originalProduct = { ...value };
+  }
+
+  private currentProduct: Product;
+  private originalProduct: Product;
 
   constructor(
     private productService: ProductService,
@@ -80,6 +97,12 @@ export class ProductEditComponent implements OnInit {
     );
   }
 
+  reset(): void {
+    this.dataIsValid = null;
+    this.currentProduct = null;
+    this.originalProduct = null;
+  }
+
   saveProduct(): void {
     if (this.isValid()) {
       if (this.product.id === 0) {
@@ -109,6 +132,7 @@ export class ProductEditComponent implements OnInit {
       this.messageService.addMessage(message);
     }
 
+    this.reset();
     this.router.navigate(['/products']);
   }
 
